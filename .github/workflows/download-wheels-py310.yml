@@ -1,0 +1,32 @@
+name: Download Python 3.10 Wheels
+on: [workflow_dispatch]
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Download manylinux wheels
+        run: |
+          mkdir -p wheels_py310
+          # 1. Pure Python / manylinux disponíveis (openai, pytesseract, deps)
+          pip download openai pytesseract \
+            --platform manylinux_2_17_x86_64.manylinux2014_x86_64 \
+            --python-version 310 \
+            --abi cp310 \
+            --only-binary=:all: \
+            -d wheels_py310
+          # 2. pymupdf e pillow: compila no runner (sem --only-binary)
+          pip download pymupdf pillow \
+            --platform manylinux_2_17_x86_64.manylinux2014_x86_64 \
+            --python-version 310 \
+            --abi cp310 \
+            -d wheels_py310
+      - name: List wheels
+        run: ls -la wheels_py310/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-python310
+          path: wheels_py310/
