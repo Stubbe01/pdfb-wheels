@@ -1,4 +1,4 @@
-name: Download Python 3.10 Wheels
+﻿name: Download Python 3.10 Wheels
 on: [workflow_dispatch]
 
 jobs:
@@ -11,18 +11,19 @@ jobs:
       - name: Download manylinux wheels
         run: |
           mkdir -p wheels_py310
-          # 1. Pure Python / manylinux disponíveis (openai, pytesseract, deps)
-          pip download openai pytesseract \
+          # 1. Pure Python / manylinux wheels - VERSÕES FIXAS
+          pip download \
+            "openai==3.35.1" \
+            "pytesseract==0.3.13" \
+            "pillow==13.0.0" \
             --platform manylinux_2_17_x86_64.manylinux2014_x86_64 \
             --python-version 310 \
             --abi cp310 \
             --only-binary=:all: \
             -d wheels_py310
-          # 2. pymupdf e pillow: compila no runner (sem --only-binary)
-          pip download pymupdf pillow \
-            --platform manylinux_2_17_x86_64.manylinux2014_x86_64 \
-            --python-version 310 \
-            --abi cp310 \
+          # 2. pymupdf: COMPILA no runner (sem --platform/--abi)
+          pip download "pymupdf==1.28.2" \
+            --no-binary pymupdf \
             -d wheels_py310
       - name: List wheels
         run: ls -la wheels_py310/
