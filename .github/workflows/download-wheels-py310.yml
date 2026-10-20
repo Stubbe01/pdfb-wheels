@@ -8,22 +8,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - name: Download manylinux wheels
+      - name: Download wheels
         run: |
           mkdir -p wheels_py310
-          # 1. Pure Python / manylinux wheels - VERSÕES FIXAS
           pip download \
             "openai==3.35.1" \
             "pytesseract==0.3.13" \
-            "pillow==13.0.0" \
-            --platform manylinux_2_17_x86_64.manylinux2014_x86_64 \
-            --python-version 310 \
-            --abi cp310 \
-            --only-binary=:all: \
-            -d wheels_py310
-          # 2. pymupdf: COMPILA no runner (sem --platform/--abi)
-          pip download "pymupdf==1.28.2" \
-            --no-binary pymupdf \
+            "pillow==12.3.0" \
+            "pymupdf==1.28.2" \
             -d wheels_py310
       - name: List wheels
         run: ls -la wheels_py310/
